@@ -52,14 +52,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 // Simple abstraction for dragging events names.
 var eventsFor = {
   touch: {
-    start: 'touchstart',
-    move: 'touchmove',
-    stop: 'touchend'
+    start: "touchstart",
+    move: "touchmove",
+    stop: "touchend"
   },
   mouse: {
-    start: 'mousedown',
-    move: 'mousemove',
-    stop: 'mouseup'
+    start: "mousedown",
+    move: "mousemove",
+    stop: "mouseup"
   }
 }; // Default to mouse events.
 
@@ -75,21 +75,30 @@ var dragEventFor = eventsFor.mouse;
   left: number,
   right: number,
   top: number,
-  bottom: number,
+  bottom: number
 };*/
 
 /*:: export type DraggableData = {
   node: HTMLElement,
-  x: number, y: number,
-  deltaX: number, deltaY: number,
-  lastX: number, lastY: number,
+  x: number,
+  y: number,
+  deltaX: number,
+  deltaY: number,
+  lastX: number,
+  lastY: number
 };*/
 
-/*:: export type DraggableEventHandler = (e: MouseEvent, data: DraggableData) => void;*/
+/*:: export type DraggableEventHandler = (
+  e: MouseEvent,
+  data: DraggableData
+) => void;*/
 
-/*:: export type ControlPosition = {x: number, y: number};*/
+/*:: export type ControlPosition = { x: number, y: number };*/
 
-/*:: export type PositionOffsetControlPosition = {x: number|string, y: number|string};*/
+/*:: export type PositionOffsetControlPosition = {
+  x: number | string,
+  y: number | string
+};*/
 
 /*:: export type DraggableCoreProps = {
   allowAnyClick: boolean,
@@ -104,7 +113,7 @@ var dragEventFor = eventsFor.mouse;
   onDrag: DraggableEventHandler,
   onStop: DraggableEventHandler,
   onMouseDown: (e: MouseEvent) => void,
-  scale: number,
+  scale: number
 };*/
 
 //
@@ -144,12 +153,12 @@ function (_React$Component) {
       _this.props.onMouseDown(e); // Only accept left-clicks.
 
 
-      if (!_this.props.allowAnyClick && typeof e.button === 'number' && e.button !== 0) return false; // Get nodes. Be sure to grab relative document (could be iframed)
+      if (!_this.props.allowAnyClick && typeof e.button === "number" && e.button !== 0) return false; // Get nodes. Be sure to grab relative document (could be iframed)
 
       var thisNode = _reactDom.default.findDOMNode(_assertThisInitialized(_this));
 
       if (!thisNode || !thisNode.ownerDocument || !thisNode.ownerDocument.body) {
-        throw new Error('<DraggableCore> not mounted on DragStart!');
+        throw new Error("<DraggableCore> not mounted on DragStart!");
       }
 
       var ownerDocument = thisNode.ownerDocument; // Short circuit if handle or cancel prop was provided and selector doesn't match.
@@ -175,9 +184,9 @@ function (_React$Component) {
           y = position.y; // Create an event object with all the data parents need to make a decision here.
 
       var coreEvent = (0, _positionFns.createCoreData)(_assertThisInitialized(_this), x, y);
-      (0, _log.default)('DraggableCore: handleDragStart: %j', coreEvent); // Call event handler. If it returns explicit false, cancel.
+      (0, _log.default)("DraggableCore: handleDragStart: %j", coreEvent); // Call event handler. If it returns explicit false, cancel.
 
-      (0, _log.default)('calling', _this.props.onStart);
+      (0, _log.default)("calling", _this.props.onStart);
 
       var shouldUpdate = _this.props.onStart(e, coreEvent);
 
@@ -202,8 +211,9 @@ function (_React$Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "handleDrag", function (e) {
-      // Prevent scrolling on mobile devices, like ipad/iphone.
-      if (e.type === 'touchmove') e.preventDefault(); // Get the current drag point from the event. This is used as the offset.
+      if (_this.props.disabled) return; // Prevent scrolling on mobile devices, like ipad/iphone.
+
+      if (e.type === "touchmove") e.preventDefault(); // Get the current drag point from the event. This is used as the offset.
 
       var position = (0, _positionFns.getControlPosition)(e, _this.state.touchIdentifier, _assertThisInitialized(_this));
       if (position == null) return;
@@ -226,24 +236,24 @@ function (_React$Component) {
       }
 
       var coreEvent = (0, _positionFns.createCoreData)(_assertThisInitialized(_this), x, y);
-      (0, _log.default)('DraggableCore: handleDrag: %j', coreEvent); // Call event handler. If it returns explicit false, trigger end.
+      (0, _log.default)("DraggableCore: handleDrag: %j", coreEvent); // Call event handler. If it returns explicit false, trigger end.
 
       var shouldUpdate = _this.props.onDrag(e, coreEvent);
 
       if (shouldUpdate === false) {
         try {
           // $FlowIgnore
-          _this.handleDragStop(new MouseEvent('mouseup'));
+          _this.handleDragStop(new MouseEvent("mouseup"));
         } catch (err) {
           // Old browsers
-          var event = ((document.createEvent('MouseEvents')
+          var event = ((document.createEvent("MouseEvents")
           /*: any*/
           )
           /*: MouseTouchEvent*/
           ); // I see why this insanity was deprecated
           // $FlowIgnore
 
-          event.initMouseEvent('mouseup', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+          event.initMouseEvent("mouseup", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
 
           _this.handleDragStop(event);
         }
@@ -272,7 +282,7 @@ function (_React$Component) {
         if (_this.props.enableUserSelectHack) (0, _domFns.removeUserSelectStyles)(thisNode.ownerDocument);
       }
 
-      (0, _log.default)('DraggableCore: handleDragStop: %j', coreEvent); // Reset the el.
+      (0, _log.default)("DraggableCore: handleDragStop: %j", coreEvent); // Reset the el.
 
       _this.setState({
         dragging: false,
@@ -285,7 +295,7 @@ function (_React$Component) {
 
       if (thisNode) {
         // Remove event handlers
-        (0, _log.default)('DraggableCore: Removing handlers');
+        (0, _log.default)("DraggableCore: Removing handlers");
         (0, _domFns.removeEvent)(thisNode.ownerDocument, dragEventFor.move, _this.handleDrag);
         (0, _domFns.removeEvent)(thisNode.ownerDocument, dragEventFor.stop, _this.handleDragStop);
       }
@@ -355,7 +365,7 @@ function (_React$Component) {
 
 exports.default = DraggableCore;
 
-_defineProperty(DraggableCore, "displayName", 'DraggableCore');
+_defineProperty(DraggableCore, "displayName", "DraggableCore");
 
 _defineProperty(DraggableCore, "propTypes", {
   /**
@@ -389,7 +399,7 @@ _defineProperty(DraggableCore, "propTypes", {
   /*: $Keys<DraggableCoreProps>*/
   ) {
     if (props[propName] && props[propName].nodeType !== 1) {
-      throw new Error('Draggable\'s offsetParent must be a DOM Node.');
+      throw new Error("Draggable's offsetParent must be a DOM Node.");
     }
   },
 
